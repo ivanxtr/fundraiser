@@ -152,6 +152,71 @@ contract("Fundraiser", accounts => {
         "events should match"
       )
     })
-
   }) 
+
+  describe("withdraws funds", () => {
+    beforeEach(async () => {
+      await fundraiser.donate({
+        from: accounts[2], value: web3.utils.toWei('0.1')
+      })
+    })
+
+    describe("access control", () => {
+      it("throws an error when called from non-owner account", async () => {
+        try {
+          await fundraiser.withdraw({ from: accounts[3] })
+          assert.fail("withdraw was not restricted to owners")
+        } catch (error) {
+          const expectedError = "Ownable: caller is not the owner"
+          const actualError = error.reason
+          assert.equal(actualError, expectedError, "should not be permitted")
+        }
+      })
+
+      it("permits the owner to call the function", async () => {
+        try {
+          await fundraiser.withdraw({ from: owner })
+          assert(true, "no errors were thrown")
+        } catch (error) {
+          assert.fail("should nor have thrown an error")
+        }
+      })
+
+      it("transfer balance to beneficiary", async () => {
+        const currentContractBalance = await web3.eth.getBalance(fundraiser.address)
+        const currentBeneficiaryBalanace = await web3.eth.getBalance(beneficiary)
+
+        await fundraiser.withdraw({ from: owner })
+
+        const newContractBalance = await web3.eth.getBalance(fundraiser.address)
+        const newBeneficiaryBalance = await web3.eth.getBalance(beneficiary)
+        const beneficiaryDifference = newBeneficiaryBalance - currentBeneficiaryBalanace
+
+        assert.equal(
+          newContractBalance,
+          0,
+          "contract should have a 0 balance"
+        )
+
+        assert.equal(
+          beneficiaryDifference,
+          currentContractBalance,
+          "beneficiary should recieve all the funds"
+        )
+      })
+
+      it("emits Withdraw event", async () => {
+        const tx = await fundraiser.withdraw({ from: owner })
+        const expectedEvent = "Withdraw"
+        const actualEvent = tx.logs[0].event
+
+        assert.equal(
+          actualEvent,
+          expectedEvent,
+          "events should match"
+        )
+      })
+
+    })
+  })
 })
