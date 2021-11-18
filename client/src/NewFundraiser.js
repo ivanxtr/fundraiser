@@ -1,13 +1,10 @@
 
 import React, { useState, useEffect } from "react";
-import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import getWeb3 from "./utils/getWeb3";
 import FactoryContract from "./contracts/FundraiserFactory.json";
-import Web3 from 'web3'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -27,8 +24,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const NewFundraiser = () => {
-const [labelWidth, setLabelWidth] = React.useState(0);
-const labelRef = React.useRef(null);
 const classes = useStyles();
 const [ web3, setWeb3 ] = useState(null)
 
@@ -70,9 +65,9 @@ const handleSubmit = async () => {
   const imageURL = image
   const url = website
   const beneficiary = address
-  const currentUser = await web3.currentProvider.selectedAddress
+  await web3.currentProvider.selectedAddress
 
-  const transaction = await contract.methods.createFundraiser(
+  await contract.methods.createFundraiser(
     name,
     url,
     imageURL,

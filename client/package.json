@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/helper-regex": "^7.10.5",
-    "@material-ui/core": "^4.3.1",
+    "@material-ui/core": "^4.12.3",
     "@openzeppelin/contracts": "^2.3.0",
     "bootstrap": "^4.3.1",
     "cryptocompare": "^1.0.0",
